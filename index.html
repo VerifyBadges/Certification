@@ -1,40 +1,120 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>Location Share | Secure Landing</title>
+  <meta charset="UTF-8" />
+  <title>Share My Location</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Noto+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Noto+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
 
-    <style>
-        * { box-sizing: border-box; }
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;
+      display:flex;align-items:center;justify-content:center;
+      background:radial-gradient(circle at top,#0b0b14,#000);
+      color:#eaeaea;font-family:'Noto Sans Arabic',sans-serif
+    }
+    .card{
+      width:90%;max-width:420px;padding:36px 28px;
+      background:rgba(12,12,20,.96);
+      border-radius:22px;text-align:center;
+      border:1px solid rgba(255,0,60,.35);
+      box-shadow:0 0 25px rgba(255,0,60,.15)
+    }
+    .logo{
+      font-family:'Orbitron',sans-serif;
+      font-size:26px;letter-spacing:4px;color:#ff003c;margin-bottom:8px
+    }
+    .subtitle{font-size:12px;color:#777;margin-bottom:24px}
+    .loader{
+      width:46px;height:46px;margin:0 auto 18px;border-radius:50%;
+      border:3px solid rgba(255,255,255,.1);
+      border-top:3px solid #ff003c;animation:spin .9s linear infinite
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #status{font-size:15px;font-weight:500;margin-bottom:16px}
+    .actions{display:flex;gap:10px;justify-content:center}
+    button{
+      padding:10px 14px;border-radius:10px;border:0;cursor:pointer;
+      background:#ff003c;color:#fff;font-weight:600
+    }
+    button.secondary{background:#333}
+    a#link{display:block;margin-top:12px;color:#9ad;word-break:break-all}
+    .footer{margin-top:22px;font-size:10px;color:#555;letter-spacing:1px}
+  </style>
+</head>
 
-        body {
-            margin: 0;
-            height: 100vh;
-            background: radial-gradient(circle at top, #0b0b14, #000);
-            color: #eaeaea;
-            font-family: 'Noto Sans Arabic', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+<body>
+  <div class="card">
+    <div class="logo">VENOM MASTER</div>
+    <div class="subtitle">GENERATE A SHAREABLE LOCATION LINK</div>
 
-        .main-card {
-            width: 90%;
-            max-width: 420px;
-            padding: 40px 30px;
-            background: rgba(12,12,20,0.96);
-            border-radius: 22px;
-            text-align: center;
-            border: 1px solid rgba(255,0,60,0.35);
-            box-shadow: 0 0 25px rgba(255,0,60,0.15);
-        }
+    <div class="loader" id="loader"></div>
+    <div id="status">اضغط لإنشاء رابط موقعك</div>
 
-        .logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 26px;
-            letter-spacing: 4px;
+    <div class="actions">
+      <button id="gen">إنشاء الرابط</button>
+      <button class="secondary" id="copy" disabled>نسخ</button>
+    </div>
+
+    <a id="link" href="#" target="_blank" rel="noopener"></a>
+    <div class="footer">SECURE LOCATION SHARE</div>
+  </div>
+
+<script>
+(function(){
+  const statusEl = document.getElementById('status');
+  const loader = document.getElementById('loader');
+  const linkEl = document.getElementById('link');
+  const btnGen = document.getElementById('gen');
+  const btnCopy = document.getElementById('copy');
+
+  loader.style.display = 'none';
+
+  function setLoading(on){
+    loader.style.display = on ? 'block' : 'none';
+    btnGen.disabled = on;
+  }
+
+  btnGen.onclick = () => {
+    if(!navigator.geolocation){
+      statusEl.textContent = 'المتصفح لا يدعم تحديد الموقع';
+      return;
+    }
+    setLoading(true);
+    statusEl.textContent = 'جارٍ تحديد الموقع…';
+
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const { latitude, longitude } = pos.coords;
+        const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
+        linkEl.href = url;
+        linkEl.textContent = url;
+        btnCopy.disabled = false;
+        statusEl.textContent = 'تم إنشاء الرابط بنجاح ✅';
+        setLoading(false);
+      },
+      err => {
+        statusEl.textContent = 'تم رفض الإذن أو حدث خطأ';
+        setLoading(false);
+      },
+      { enableHighAccuracy:true, timeout:10000 }
+    );
+  };
+
+  btnCopy.onclick = async () => {
+    try{
+      await navigator.clipboard.writeText(linkEl.textContent);
+      statusEl.textContent = 'تم النسخ 📋';
+    }catch(e){
+      statusEl.textContent = 'فشل النسخ';
+    }
+  };
+})();
+</script>
+
+</body>
+</html>            letter-spacing: 4px;
             color: #ff003c;
             margin-bottom: 10px;
         }
